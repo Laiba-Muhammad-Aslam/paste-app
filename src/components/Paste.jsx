@@ -1,5 +1,9 @@
 import React, {useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { removeFromPastes } from '../redux/pasteSlice';
+import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+
 
 export default function Paste() {
   const pastes = useSelector((state) => state.paste.pastes);
@@ -27,14 +31,22 @@ export default function Paste() {
           filteredData.map(
             (paste) => {
               return (
-                <div className='border'>
+                <div className='border' key={paste?._id}>
                   <div>{paste.title}</div>
                   <div>{paste.content}</div>
                   <div className='flex flex-row place-content-evenly gap-4'>
-                    <button>Edit</button>
-                    <button>View</button>
+                    <button>
+                      <Link to={`/pastes/${paste?._id}`}>View</Link>
+                    </button>
+                    <button>
+                      <Link to={`/?pasteId=${paste?.id}`}>Edit</Link>
+                    </button>
                     <button onClick={()=> handleDelete(paste?._id)}>Delete</button>
-                    <button>Copy</button>
+                    <button onClick={
+                      ()=>{navigator.clipboard.writeText(paste?.content)
+                        toast.success("Copy to clipboard")
+                      }
+                  }>Copy</button>
                     <button>Share</button>
                   </div>
                   <div>{paste.createdAt}</div>

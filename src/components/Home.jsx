@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+// import { useSearchParams } from 'react-router-dom';
 import { addToPastes, updateToPastes } from '../redux/pasteSlice';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Home() {
     const [title, setTitle] = useState("");
@@ -9,6 +10,30 @@ export default function Home() {
     const [searchParams, setSearchParam] = useSearchParams("");
     const pasteId = searchParams.get("pasteId");
     const dispatch = useDispatch();
+    const allPastes = useSelector((state) => state.paste.pastes)
+    console.log(allPastes)
+
+    // useEffect(() => {
+    //   if(pasteId){
+    //    const paste = allPastes.find((p) => p._id === pasteId);
+    //    setTitle(paste.title);
+    //    setValue(paste.content)
+    //   }
+    //  }, [pasteId, allPastes])
+
+    useEffect(() => {
+      console.log("pasteId:", pasteId); // Debugging the pasteId value
+      if (pasteId) {
+        const paste = allPastes.find((p) => p._id === pasteId);
+        if (paste) {
+          setTitle(paste.title);
+          setValue(paste.content);
+        } else {
+          console.error(`Paste with ID ${pasteId} not found`);
+        }
+      }
+    }, [pasteId, allPastes]);
+    
 
     function createPaste(){
       const paste ={
@@ -17,6 +42,8 @@ export default function Home() {
         _id: pasteId || Date.now().toString(36),
         createdAt: new Date().toISOString(),
       }
+   
+      
 
       if(pasteId){
         //update the paste
